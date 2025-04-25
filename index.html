@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario Rifiuti San Vito Chietino 2025</title>
+
+    <link rel="manifest" href="manifest.json">
+
+    <meta name="theme-color" content="#3b82f6">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Calendario SVC">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Stili personalizzati (invariati) */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 4px;
+        }
+        .calendar-day {
+            min-height: 110px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 4px;
+            border-radius: 8px;
+            background-color: #ffffff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+        .calendar-day:hover {
+             transform: translateY(-2px);
+        }
+        .day-number {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #1f2937;
+        }
+        .day-header {
+            font-weight: 500;
+            text-align: center;
+            padding: 8px 0;
+            color: #4b5563;
+        }
+        .waste-item {
+            font-size: 0.70rem;
+            line-height: 0.9rem;
+            padding: 2px 4px;
+            margin-top: 2px;
+            border-radius: 4px;
+            text-align: center;
+            color: #ffffff;
+            width: 95%;
+            overflow-wrap: break-word;
+        }
+        .waste-organico { background-color: #a0522d; }
+        .waste-carta { background-color: #4682b4; }
+        .waste-vetro { background-color: #2e8b57; }
+        .waste-imb-misti { background-color: #ffc107; color: #1f2937;}
+        .waste-indifferenziato { background-color: #6c757d; }
+        .today {
+             border: 2px solid #3b82f6;
+             background-color: #eff6ff;
+        }
+        .other-month {
+            background-color: #e5e7eb;
+            color: #9ca3af;
+        }
+        .nav-button {
+            background-color: #3b82f6;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+        .nav-button:hover {
+            background-color: #2563eb;
+        }
+        .nav-button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body class="p-4">
+
+    <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
+        <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">Calendario Rifiuti San Vito Chietino 2025 (Utenze Non Domestiche)</h1>
+
+        <div class="flex justify-between items-center mb-4">
+            <button id="prev-month" class="nav-button">‹ Precedente</button>
+            <h2 id="current-month-year" class="text-xl font-semibold text-gray-700"></h2>
+            <button id="next-month" class="nav-button">Successivo ›</button>
+        </div>
+
+        <div class="calendar-grid mb-4">
+            <div class="day-header">Lun</div>
+            <div class="day-header">Mar</div>
+            <div class="day-header">Mer</div>
+            <div class="day-header">Gio</div>
+            <div class="day-header">Ven</div>
+            <div class="day-header">Sab</div>
+            <div class="day-header">Dom</div>
+        </div>
+        <div id="calendar-days" class="calendar-grid">
+            </div>
+
+         <div class="mt-6 border-t pt-4">
+             <h3 class="text-lg font-semibold text-gray-700 mb-2">Legenda</h3>
+             <div class="flex flex-wrap gap-2">
+                 <span class="waste-item waste-organico">Organico</span>
+                 <span class="waste-item waste-carta">Carta</span>
+                 <span class="waste-item waste-vetro">Vetro</span>
+                 <span class="waste-item waste-imb-misti">Imb. Misti (Plastica/Metalli)</span>
+                 <span class="waste-item waste-indifferenziato">Indifferenziato</span>
+             </div>
+        </div>
+
+        <p class="text-xs text-gray-500 mt-4 text-center">
+             Nota: I dati di raccolta sono stati estratti dal PDF fornito e potrebbero richiedere verifiche, specialmente per i mesi estivi e i giorni festivi.
+             Numero Verde ECOLAN: 800.02.02.29
+         </p>
+    </div>
+
+    <script>
+        // --- Dati del Calendario (Completi per 2025, basati sul PDF) ---
+        const calendarData = {
+            '2025-01': { '1': [], '2': ['VETRO', 'CARTA'], '3': ['ORGANICO', 'IMB. MISTI'], '4': [], '5': [], '6': [], '7': ['ORGANICO', 'VETRO'], '8': ['IMB. MISTI', 'CARTA'], '9': ['CARTA', 'ORGANICO'], '10': ['INDIFFERENZIATO', 'IMB. MISTI'], '11': ['ORGANICO', 'CARTA'], '12': [], '13': ['CARTA', 'IMB. MISTI'], '14': ['ORGANICO'], '15': ['IMB. MISTI', 'CARTA'], '16': ['ORGANICO'], '17': ['VETRO', 'IMB. MISTI'], '18': ['ORGANICO', 'CARTA'], '19': [], '20': ['CARTA', 'IMB. MISTI'], '21': ['ORGANICO', 'VETRO'], '22': ['IMB. MISTI', 'CARTA'], '23': ['ORGANICO'], '24': ['INDIFFERENZIATO', 'IMB. MISTI'], '25': ['ORGANICO', 'CARTA'], '26': [], '27': ['CARTA', 'IMB. MISTI'], '28': ['ORGANICO'], '29': ['IMB. MISTI', 'CARTA'], '30': ['ORGANICO'], '31': ['VETRO', 'IMB. MISTI'], },
+            '2025-02': { '1': ['ORGANICO', 'CARTA'], '2': [], '3': ['CARTA', 'IMB. MISTI'], '4': ['ORGANICO', 'VETRO'], '5': ['IMB. MISTI', 'CARTA'], '6': ['ORGANICO'], '7': ['INDIFFERENZIATO', 'IMB. MISTI'], '8': ['ORGANICO', 'CARTA'], '9': [], '10': ['CARTA', 'IMB. MISTI'], '11': ['ORGANICO'], '12': ['IMB. MISTI', 'CARTA'], '13': ['ORGANICO'], '14': ['VETRO', 'IMB. MISTI'], '15': ['ORGANICO', 'CARTA'], '16': [], '17': ['CARTA', 'IMB. MISTI'], '18': ['ORGANICO', 'VETRO'], '19': ['IMB. MISTI', 'CARTA'], '20': ['ORGANICO'], '21': ['INDIFFERENZIATO', 'IMB. MISTI'], '22': ['ORGANICO', 'CARTA'], '23': [], '24': ['CARTA', 'IMB. MISTI'], '25': ['ORGANICO'], '26': ['IMB. MISTI', 'CARTA'], '27': ['ORGANICO'], '28': ['VETRO', 'IMB. MISTI'], },
+            '2025-03': { '1': ['ORGANICO', 'CARTA'], '2': [], '3': ['CARTA', 'IMB. MISTI'], '4': ['ORGANICO', 'VETRO'], '5': ['IMB. MISTI', 'CARTA'], '6': ['ORGANICO'], '7': ['INDIFFERENZIATO', 'IMB. MISTI'], '8': ['ORGANICO', 'CARTA'], '9': [], '10': ['CARTA', 'IMB. MISTI'], '11': ['ORGANICO'], '12': ['IMB. MISTI', 'CARTA'], '13': ['ORGANICO'], '14': ['VETRO', 'IMB. MISTI'], '15': ['ORGANICO', 'CARTA'], '16': [], '17': ['CARTA', 'IMB. MISTI'], '18': ['ORGANICO', 'VETRO'], '19': ['IMB. MISTI', 'CARTA'], '20': ['ORGANICO'], '21': ['INDIFFERENZIATO', 'IMB. MISTI'], '22': ['ORGANICO', 'CARTA'], '23': [], '24': ['CARTA', 'IMB. MISTI'], '25': ['ORGANICO'], '26': ['IMB. MISTI', 'CARTA'], '27': ['ORGANICO'], '28': ['VETRO', 'IMB. MISTI'], '29': ['ORGANICO', 'CARTA'], '30': [], '31': ['CARTA', 'IMB. MISTI'] },
+            '2025-04': { '1': ['ORGANICO', 'VETRO'], '2': ['IMB. MISTI', 'CARTA'], '3': ['ORGANICO'], '4': ['INDIFFERENZIATO', 'IMB. MISTI'], '5': ['ORGANICO', 'CARTA'], '6': [], '7': ['CARTA', 'IMB. MISTI'], '8': ['ORGANICO'], '9': ['IMB. MISTI', 'CARTA'], '10': ['ORGANICO'], '11': ['VETRO', 'IMB. MISTI'], '12': ['ORGANICO', 'CARTA'], '13': [], '14': ['CARTA', 'IMB. MISTI'], '15': ['ORGANICO', 'VETRO'], '16': ['IMB. MISTI', 'CARTA'], '17': ['ORGANICO'], '18': ['INDIFFERENZIATO', 'IMB. MISTI'], '19': ['ORGANICO', 'CARTA'], '20': [], '21': ['CARTA', 'IMB. MISTI', 'ORGANICO'], '22': ['ORGANICO', 'VETRO'], '23': ['IMB. MISTI', 'CARTA'], '24': ['VETRO', 'ORGANICO'], '25': [], '26': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '27': [], '28': ['CARTA', 'IMB. MISTI', 'ORGANICO'], '29': ['ORGANICO', 'VETRO'], '30': ['IMB. MISTI', 'CARTA'], },
+            '2025-05': { '1': ['ORGANICO'], '2': ['INDIFFERENZIATO', 'IMB. MISTI'], '3': ['ORGANICO', 'CARTA'], '4': [], '5': ['CARTA', 'IMB. MISTI', 'ORGANICO'], '6': ['ORGANICO', 'VETRO'], '7': ['IMB. MISTI', 'CARTA'], '8': ['ORGANICO'], '9': ['VETRO', 'IMB. MISTI'], '10': ['ORGANICO', 'CARTA'], '11': [], '12': ['CARTA', 'IMB. MISTI', 'ORGANICO'], '13': ['ORGANICO', 'VETRO'], '14': ['IMB. MISTI', 'CARTA'], '15': ['ORGANICO'], '16': ['INDIFFERENZIATO', 'IMB. MISTI'], '17': ['ORGANICO', 'CARTA'], '18': [], '19': ['CARTA', 'IMB. MISTI', 'ORGANICO'], '20': ['ORGANICO', 'VETRO'], '21': ['IMB. MISTI', 'CARTA'], '22': ['ORGANICO'], '23': ['VETRO', 'IMB. MISTI'], '24': ['ORGANICO', 'CARTA'], '25': [], '26': ['CARTA', 'IMB. MISTI'], '27': ['ORGANICO', 'VETRO'], '28': ['IMB. MISTI', 'CARTA'], '29': ['ORGANICO'], '30': ['INDIFFERENZIATO', 'IMB. MISTI'], '31': ['ORGANICO', 'CARTA'], },
+            '2025-06': { '1': [], '2': ['ORGANICO', 'CARTA', 'VETRO', 'IMB. MISTI'], '3': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '4': ['ORGANICO', 'VETRO', 'IMB. MISTI'], '5': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '6': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '7': ['ORGANICO', 'VETRO', 'CARTA'], '8': ['ORGANICO'], '9': ['ORGANICO', 'CARTA', 'VETRO', 'IMB. MISTI'], '10': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '11': ['ORGANICO', 'VETRO', 'IMB. MISTI'], '12': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '13': ['ORGANICO', 'CARTA', 'IMB. MISTI', 'INDIFFERENZIATO'], '14': ['ORGANICO', 'VETRO', 'CARTA'], '15': ['ORGANICO'], '16': ['ORGANICO', 'CARTA', 'VETRO', 'IMB. MISTI'], '17': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '18': ['ORGANICO', 'VETRO', 'IMB. MISTI'], '19': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '20': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '21': ['ORGANICO', 'VETRO', 'CARTA'], '22': ['ORGANICO'], '23': ['ORGANICO', 'CARTA', 'VETRO', 'IMB. MISTI'], '24': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '25': ['ORGANICO', 'VETRO', 'IMB. MISTI'], '26': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '27': ['ORGANICO', 'CARTA', 'IMB. MISTI', 'INDIFFERENZIATO'], '28': ['ORGANICO', 'VETRO', 'CARTA'], '29': ['ORGANICO'], '30': ['ORGANICO', 'CARTA', 'VETRO', 'IMB. MISTI'], },
+            '2025-07': { '1': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '2': ['ORGANICO', 'VETRO', 'IMB. MISTI'], '3': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '4': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '5': ['ORGANICO', 'VETRO', 'CARTA'], '6': ['ORGANICO'], '7': ['ORGANICO', 'CARTA', 'VETRO', 'IMB. MISTI'], '8': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '9': ['ORGANICO', 'VETRO', 'IMB. MISTI'], '10': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '11': ['ORGANICO', 'CARTA', 'IMB. MISTI', 'INDIFFERENZIATO'], '12': ['ORGANICO', 'VETRO', 'CARTA'], '13': ['ORGANICO'], '14': ['ORGANICO', 'CARTA', 'VETRO', 'IMB. MISTI'], '15': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '16': ['ORGANICO', 'VETRO', 'IMB. MISTI'], '17': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '18': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '19': ['ORGANICO', 'VETRO', 'CARTA'], '20': ['ORGANICO'], '21': ['ORGANICO', 'CARTA', 'VETRO', 'IMB. MISTI'], '22': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '23': ['ORGANICO', 'VETRO', 'IMB. MISTI'], '24': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '25': ['ORGANICO', 'CARTA', 'IMB. MISTI', 'INDIFFERENZIATO'], '26': ['ORGANICO', 'VETRO', 'CARTA'], '27': ['ORGANICO'], '28': ['ORGANICO', 'CARTA', 'VETRO', 'IMB. MISTI'], '29': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '30': ['ORGANICO', 'VETRO', 'IMB. MISTI'], '31': ['ORGANICO', 'CARTA', 'IMB. MISTI'], },
+            '2025-08': { '1': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '2': ['ORGANICO', 'VETRO', 'CARTA'], '3': ['ORGANICO'], '4': ['ORGANICO', 'CARTA', 'VETRO', 'IMB. MISTI'], '5': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '6': ['ORGANICO', 'VETRO', 'IMB. MISTI'], '7': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '8': ['ORGANICO', 'CARTA', 'IMB. MISTI', 'INDIFFERENZIATO'], '9': ['ORGANICO', 'VETRO', 'CARTA'], '10': ['ORGANICO'], '11': ['ORGANICO', 'CARTA', 'VETRO', 'IMB. MISTI'], '12': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '13': ['ORGANICO', 'VETRO', 'IMB. MISTI'], '14': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '15': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '16': ['ORGANICO', 'VETRO', 'CARTA'], '17': ['ORGANICO'], '18': ['ORGANICO', 'CARTA', 'VETRO', 'IMB. MISTI'], '19': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '20': ['ORGANICO', 'VETRO', 'IMB. MISTI'], '21': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '22': ['ORGANICO', 'CARTA', 'IMB. MISTI', 'INDIFFERENZIATO'], '23': ['ORGANICO', 'VETRO', 'CARTA'], '24': ['ORGANICO'], '25': ['ORGANICO', 'CARTA', 'VETRO', 'IMB. MISTI'], '26': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '27': ['ORGANICO', 'VETRO', 'IMB. MISTI'], '28': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '29': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '30': ['ORGANICO', 'VETRO', 'CARTA'], '31': ['ORGANICO'], },
+            '2025-09': { '1': ['ORGANICO', 'CARTA', 'VETRO', 'IMB. MISTI'], '2': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '3': ['ORGANICO', 'VETRO', 'IMB. MISTI'], '4': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '5': ['ORGANICO', 'CARTA', 'IMB. MISTI', 'INDIFFERENZIATO'], '6': ['ORGANICO', 'VETRO', 'CARTA'], '7': ['ORGANICO'], '8': ['ORGANICO', 'CARTA', 'VETRO', 'IMB. MISTI'], '9': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '10': ['ORGANICO', 'VETRO', 'IMB. MISTI'], '11': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '12': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '13': ['ORGANICO', 'VETRO', 'CARTA'], '14': ['ORGANICO'], '15': ['ORGANICO', 'CARTA', 'VETRO', 'IMB. MISTI'], '16': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '17': ['ORGANICO', 'VETRO', 'IMB. MISTI'], '18': ['ORGANICO', 'CARTA', 'IMB. MISTI'], '19': ['ORGANICO', 'CARTA', 'IMB. MISTI', 'INDIFFERENZIATO'], '20': ['ORGANICO', 'VETRO', 'CARTA'], '21': ['ORGANICO'], '22': ['CARTA', 'IMB. MISTI'], '23': ['ORGANICO', 'VETRO'], '24': ['IMB. MISTI', 'CARTA'], '25': ['ORGANICO'], '26': ['INDIFFERENZIATO', 'IMB. MISTI'], '27': ['ORGANICO', 'CARTA'], '28': [], '29': ['CARTA', 'IMB. MISTI'], '30': ['ORGANICO'], },
+            '2025-10': { '1': ['IMB. MISTI', 'CARTA'], '2': ['ORGANICO'], '3': ['INDIFFERENZIATO', 'IMB. MISTI'], '4': ['ORGANICO', 'CARTA'], '5': [], '6': ['CARTA', 'IMB. MISTI'], '7': ['ORGANICO'], '8': ['IMB. MISTI', 'CARTA'], '9': ['ORGANICO'], '10': ['VETRO', 'IMB. MISTI'], '11': ['ORGANICO', 'CARTA'], '12': [], '13': ['CARTA', 'IMB. MISTI'], '14': ['ORGANICO', 'VETRO'], '15': ['IMB. MISTI', 'CARTA'], '16': ['ORGANICO'], '17': ['INDIFFERENZIATO', 'IMB. MISTI'], '18': ['ORGANICO', 'CARTA'], '19': [], '20': ['CARTA', 'IMB. MISTI'], '21': ['ORGANICO'], '22': ['IMB. MISTI', 'CARTA'], '23': ['ORGANICO'], '24': ['VETRO', 'IMB. MISTI'], '25': ['ORGANICO', 'CARTA'], '26': [], '27': ['CARTA', 'IMB. MISTI'], '28': ['ORGANICO', 'VETRO'], '29': ['IMB. MISTI', 'CARTA'], '30': ['ORGANICO'], '31': ['INDIFFERENZIATO', 'IMB. MISTI'], },
+            '2025-11': { '1': ['ORGANICO', 'CARTA'], '2': [], '3': ['CARTA', 'IMB. MISTI'], '4': ['ORGANICO'], '5': ['IMB. MISTI', 'CARTA'], '6': ['ORGANICO'], '7': ['VETRO', 'IMB. MISTI'], '8': ['ORGANICO', 'CARTA'], '9': [], '10': ['CARTA', 'IMB. MISTI'], '11': ['ORGANICO', 'VETRO'], '12': ['IMB. MISTI', 'CARTA'], '13': ['ORGANICO'], '14': ['INDIFFERENZIATO', 'IMB. MISTI'], '15': ['ORGANICO', 'CARTA'], '16': [], '17': ['CARTA', 'IMB. MISTI'], '18': ['ORGANICO'], '19': ['IMB. MISTI', 'CARTA'], '20': ['ORGANICO'], '21': ['VETRO', 'IMB. MISTI'], '22': ['ORGANICO', 'CARTA'], '23': [], '24': ['CARTA', 'IMB. MISTI'], '25': ['ORGANICO', 'VETRO'], '26': ['IMB. MISTI', 'CARTA'], '27': ['ORGANICO'], '28': ['INDIFFERENZIATO', 'IMB. MISTI'], '29': ['ORGANICO', 'CARTA'], '30': [], },
+            '2025-12': { '1': ['CARTA', 'IMB. MISTI'], '2': ['ORGANICO', 'VETRO'], '3': ['IMB. MISTI', 'CARTA'], '4': ['ORGANICO'], '5': ['VETRO', 'IMB. MISTI'], '6': ['ORGANICO', 'CARTA'], '7': [], '8': ['CARTA', 'IMB. MISTI'], '9': ['ORGANICO', 'VETRO'], '10': ['IMB. MISTI', 'CARTA'], '11': ['ORGANICO'], '12': ['INDIFFERENZIATO', 'IMB. MISTI'], '13': ['ORGANICO', 'CARTA'], '14': [], '15': ['CARTA', 'IMB. MISTI'], '16': ['ORGANICO', 'VETRO'], '17': ['IMB. MISTI', 'CARTA'], '18': ['ORGANICO'], '19': ['VETRO', 'IMB. MISTI'], '20': ['ORGANICO', 'CARTA'], '21': [], '22': ['CARTA', 'IMB. MISTI'], '23': ['ORGANICO'], '24': ['IMB. MISTI', 'CARTA'], '25': [], '26': ['INDIFFERENZIATO', 'IMB. MISTI'], '27': ['ORGANICO', 'CARTA'], '28': [], '29': ['CARTA', 'IMB. MISTI'], '30': ['ORGANICO', 'VETRO'], '31': ['IMB. MISTI', 'CARTA'], },
+        };
+
+        // --- Logica del Calendario ---
+        const monthNames = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
+        const calendarDaysContainer = document.getElementById('calendar-days');
+        const currentMonthYearElement = document.getElementById('current-month-year');
+        const prevMonthButton = document.getElementById('prev-month');
+        const nextMonthButton = document.getElementById('next-month');
+
+        const now = new Date();
+        let currentDate;
+        if (now.getFullYear() === 2025) {
+             currentDate = new Date(2025, now.getMonth(), now.getDate());
+        } else {
+             currentDate = new Date(2025, 0, 1);
+        }
+
+        function getWasteClass(wasteType) {
+            if (!wasteType) return '';
+            const type = wasteType.toLowerCase().replace(/\./g, '').replace(/\s+/g, '-');
+            if (type === 'organico') return 'waste-organico';
+            if (type === 'carta') return 'waste-carta';
+            if (type === 'vetro') return 'waste-vetro';
+            if (type === 'imb-misti') return 'waste-imb-misti';
+            if (type === 'indifferenziato') return 'waste-indifferenziato';
+            if (type.includes('organico')) return 'waste-organico';
+            if (type.includes('carta')) return 'waste-carta';
+            if (type.includes('vetro')) return 'waste-vetro';
+            if (type.includes('imb-misti')) return 'waste-imb-misti';
+            if (type.includes('indifferenziato')) return 'waste-indifferenziato';
+            return 'bg-gray-400';
+        }
+
+        function renderCalendar(year, month) {
+            calendarDaysContainer.innerHTML = '';
+            currentMonthYearElement.textContent = `${monthNames[month]} ${year}`;
+
+            const firstDayOfMonth = new Date(year, month, 1);
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            let startDayOfWeek = firstDayOfMonth.getDay();
+            startDayOfWeek = (startDayOfWeek === 0) ? 6 : startDayOfWeek - 1;
+
+            const monthKey = `${year}-${String(month + 1).padStart(2, '0')}`;
+            const monthData = calendarData[monthKey] || {};
+
+            const today = new Date();
+            const isCurrentDisplayMonthToday = today.getFullYear() === year && today.getMonth() === month;
+
+            // Aggiunge celle vuote per i giorni prima dell'inizio del mese
+            for (let i = 0; i < startDayOfWeek; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.classList.add('calendar-day', 'other-month');
+                calendarDaysContainer.appendChild(emptyCell);
+            }
+
+            // Aggiunge i giorni del mese
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayCell = document.createElement('div');
+                dayCell.classList.add('calendar-day');
+
+                if (isCurrentDisplayMonthToday && day === today.getDate()) {
+                    dayCell.classList.add('today');
+                }
+
+                const dayNumber = document.createElement('span');
+                dayNumber.classList.add('day-number');
+                dayNumber.textContent = day;
+                dayCell.appendChild(dayNumber);
+
+                const dayKey = String(day);
+                const wastes = monthData[dayKey];
+
+                if (wastes && Array.isArray(wastes) && wastes.length > 0) {
+                     wastes.forEach(waste => {
+                        const wasteElement = document.createElement('span');
+                        const cleanWaste = waste.trim();
+                        wasteElement.classList.add('waste-item', getWasteClass(cleanWaste));
+                        let displayText = cleanWaste.replace('IMB. MISTI', 'PLAST/MET').replace('INDIFFERENZIATO', 'INDIFF.');
+                        wasteElement.textContent = displayText;
+                        dayCell.appendChild(wasteElement);
+                    });
+                } // Non fa nulla per array vuoto o dati mancanti
+
+                calendarDaysContainer.appendChild(dayCell);
+            }
+
+             // Aggiorna stato pulsanti navigazione
+             prevMonthButton.disabled = year === 2025 && month === 0;
+             nextMonthButton.disabled = year === 2025 && month === 11;
+        }
+
+        // Event Listener per i pulsanti
+        prevMonthButton.addEventListener('click', () => {
+            if (currentDate.getFullYear() === 2025 && currentDate.getMonth() === 0) return;
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+        });
+
+        nextMonthButton.addEventListener('click', () => {
+            if (currentDate.getFullYear() === 2025 && currentDate.getMonth() === 11) return;
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+        });
+
+        // Renderizza il calendario iniziale
+        renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+
+        // --- Registrazione Service Worker ---
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js') // Assicurati che il percorso sia corretto
+              .then(registration => {
+                console.log('ServiceWorker registrato con successo:', registration.scope);
+              })
+              .catch(error => {
+                console.log('Registrazione ServiceWorker fallita:', error);
+              });
+          });
+        }
+
+    </script>
+
+</body>
+</html>
